@@ -1,4 +1,5 @@
 Comparador de Textos e Códigos
+
 Este projeto implementa um comparador de textos e códigos utilizando HTML, CSS e JavaScript, juntamente com a biblioteca diff_match_patch para a comparação de strings. A ferramenta destaca visualmente as diferenças entre dois textos ou códigos, facilitando a identificação de alterações, adições e remoções.
 
 Funcionalidades
