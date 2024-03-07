@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Comparador de Textos Detalhado</title>
+<style>
+  .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+  }
+  textarea {
+    margin: 10px;
+    width: 300px;
+    height: 200px;
+  }
+  #resultado {
+    margin-top: 20px;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <textarea id="texto1" placeholder="Cole o primeiro texto aqui..."></textarea>
+  <textarea id="texto2" placeholder="Cole o segundo texto aqui..."></textarea>
+  <button onclick="compararTextos()">Comparar Textos</button>
+  <div id="resultado"></div>
+</div>
+
+<script>
+function compararTextos() {
+  var texto1 = document.getElementById('texto1').value;
+  var texto2 = document.getElementById('texto2').value;
+
+  // Convertendo os textos em arrays de palavras para comparação
+  var palavrasTexto1 = texto1.trim().split(/\s+/);
+  var palavrasTexto2 = texto2.trim().split(/\s+/);
+
+  var resultado = document.getElementById('resultado');
+  resultado.innerHTML = ""; // Limpa o resultado anterior
+
+  var diffs = encontrarDiferencas(palavrasTexto1, palavrasTexto2);
+
+  if (diffs.length === 0) {
+    resultado.innerHTML = "<p>Os textos são idênticos.</p>";
+  } else {
+    resultado.innerHTML = "<p>Diferenças encontradas:</p>";
+    diffs.forEach(function(diff, index) {
+      resultado.innerHTML += `<p>Diferença ${index + 1}:<br> No Texto 1: "${diff.texto1}"<br> No Texto 2: "${diff.texto2}"</p>`;
+    });
+  }
+}
+
+function encontrarDiferencas(palavrasTexto1, palavrasTexto2) {
+  var diffs = [];
+  var len = Math.max(palavrasTexto1.length, palavrasTexto2.length);
+  for (var i = 0; i < len; i++) {
+    if (palavrasTexto1[i] !== palavrasTexto2[i]) {
+      diffs.push({
+        texto1: palavrasTexto1[i] || "<span style='color: red;'>[Texto não possui mais palavras]</span>",
+        texto2: palavrasTexto2[i] || "<span style='color: red;'>[Texto não possui mais palavras]</span>"
+      });
+    }
+  }
+  return diffs;
+}
+</script>
+
+</body>
+</html>
