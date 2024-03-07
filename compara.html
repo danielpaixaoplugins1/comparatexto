@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Comparador de Textos Detalhado</title>
+<title>Comparador Refinado de Textos e Códigos</title>
 <style>
   .container {
     display: flex;
@@ -12,60 +12,57 @@
   }
   textarea {
     margin: 10px;
-    width: 300px;
+    width: 600px;
     height: 200px;
   }
   #resultado {
     margin-top: 20px;
+    white-space: pre-wrap;
   }
+  .igual { color: black; }
+  .diferente { color: blue; }
+  .adicionado { color: green; }
+  .removido { text-decoration: line-through; }
 </style>
 </head>
 <body>
 
 <div class="container">
-  <textarea id="texto1" placeholder="Cole o primeiro texto aqui..."></textarea>
-  <textarea id="texto2" placeholder="Cole o segundo texto aqui..."></textarea>
-  <button onclick="compararTextos()">Comparar Textos</button>
+  <textarea id="texto1" placeholder="Cole o primeiro texto ou código aqui..."></textarea>
+  <textarea id="texto2" placeholder="Cole o segundo texto ou código aqui..."></textarea>
+  <button id="compararBtn">Comparar</button>
   <div id="resultado"></div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/diff_match_patch/20121119/diff_match_patch.js"></script>
 <script>
-function compararTextos() {
-  var texto1 = document.getElementById('texto1').value;
-  var texto2 = document.getElementById('texto2').value;
+document.getElementById('compararBtn').addEventListener('click', () => {
+  const dmp = new diff_match_patch();
+  const texto1 = document.getElementById('texto1').value;
+  const texto2 = document.getElementById('texto2').value;
+  let diffs = dmp.diff_main(texto1, texto2);
+  dmp.diff_cleanupSemantic(diffs);
 
-  // Convertendo os textos em arrays de palavras para comparação
-  var palavrasTexto1 = texto1.trim().split(/\s+/);
-  var palavrasTexto2 = texto2.trim().split(/\s+/);
+  const display = document.getElementById('resultado');
+  display.innerHTML = ''; // Limpa os resultados anteriores
 
-  var resultado = document.getElementById('resultado');
-  resultado.innerHTML = ""; // Limpa o resultado anterior
-
-  var diffs = encontrarDiferencas(palavrasTexto1, palavrasTexto2);
-
-  if (diffs.length === 0) {
-    resultado.innerHTML = "<p>Os textos são idênticos.</p>";
-  } else {
-    resultado.innerHTML = "<p>Diferenças encontradas:</p>";
-    diffs.forEach(function(diff, index) {
-      resultado.innerHTML += `<p>Diferença ${index + 1}:<br> No Texto 1: "${diff.texto1}"<br> No Texto 2: "${diff.texto2}"</p>`;
-    });
-  }
-}
-
-function encontrarDiferencas(palavrasTexto1, palavrasTexto2) {
-  var diffs = [];
-  var len = Math.max(palavrasTexto1.length, palavrasTexto2.length);
-  for (var i = 0; i < len; i++) {
-    if (palavrasTexto1[i] !== palavrasTexto2[i]) {
-      diffs.push({
-        texto1: palavrasTexto1[i] || "<span style='color: red;'>[Texto não possui mais palavras]</span>",
-        texto2: palavrasTexto2[i] || "<span style='color: red;'>[Texto não possui mais palavras]</span>"
-      });
+  diffs.forEach(part => {
+    const span = document.createElement('span');
+    span.textContent = part[1];
+    switch (part[0]) {
+      case 0: // Não houve mudança
+        span.classList.add('igual');
+        break;
+      case -1: // Texto removido
+        span.classList.add('removido');
+        break;
+      case 1: // Texto adicionado
+        span.classList.add('adicionado');
+        break;
     }
-  }
-  return diffs;
-}
+    display.appendChild(span);
+  });
+});
 </script>
 
 </body>
